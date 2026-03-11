@@ -1,0 +1,207 @@
+\documentclass{exam}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[main=english,vietnamese]{babel}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{centernot}
+\usepackage{cases}
+\usepackage{physics}
+\usepackage[shortlabels]{enumitem}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage{sidecap}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{kvmap}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\definecolor{borderblue}{HTML}{33c2ff}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\curly}[1]{\left\{#1\right\}}
+
+\allowdisplaybreaks
+
+\makeatletter
+\long\def\paragraph{%
+  \@startsection{paragraph}{4}%
+  {\z@}{2ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\def\@xequals@fill{\arrowfill@\Relbar\Relbar\Relbar}
+\newcommand*\xequals[2][]{\DOTSB\ext@arrow0055\@xequals@fill{#1}{#2}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\NewTColorBox{subcircuit}{m}{
+  standard jigsaw,
+  sharp corners,
+  boxrule=0.4pt,
+  coltitle=black,
+  colframe=black,
+  opacityback=0,
+  opacitybacktitle=0,
+  fonttitle=\normalfont\bfseries\upshape,
+  fontupper=\normalfont,
+  title={Subcircuit \texttt{#1}},
+  after title={.},	
+  attach title to upper={\ },
+}
+
+\newcommand{\lnand}{\uparrow}
+\newcommand{\lnor}{\downarrow}
+\newcommand{\lxor}{\oplus}
+
+\title{ECE341 - Homework 4}
+\author{Ton-Minh-Ky Tran}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\section{4-bit ripple-carry adder implementation using basic logic gates}
+We first implement our most rudimentary component---a half adder.
+\begin{subcircuit}{half\_adder}
+	This subcircuit adds two bits $A$ and $B$ and outputs the resultant bit (referred to as the low bit, denoted as $l$) and carry (referred to as the high bit, denoted as $h$). The carry is enabled if the low bit overflows. Observe the following truth table:
+	\begin{center}
+		\bgroup
+		\def\arraystretch{1.2}
+		\begin{tabular}{cc|cc}
+			$A$ & $B$ & $h$ & $l$ \\
+			\hline
+			0 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 1 \\
+			1 & 0 & 0 & 1 \\
+			1 & 1 & 1 & 0
+		\end{tabular}
+		\egroup
+	\end{center}
+	By inspection, one can see that $h = AB$ and $l = A \lxor B$. Connect the inputs to the gates to the appropriate output and we are done.
+\end{subcircuit}
+
+Using \verb|half_adder|, we can easily extend its functionality into a full adder.
+\begin{subcircuit}{full\_adder}
+	This subcircuit adds three bits $A$, $B$ and $C$ and outputs the resultant bit (low bit) and carry (high bit). Observe the following truth table:
+	\begin{center}
+		\bgroup
+		\def\arraystretch{1.2}
+		\begin{tabular}{ccc|cc}
+			$A$ & $B$ & $C$ & $h$ & $l$ \\
+			\hline
+			0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 & 1 \\
+			0 & 1 & 0 & 0 & 1 \\
+			0 & 1 & 1 & 1 & 0 \\
+			1 & 0 & 0 & 0 & 1 \\
+			1 & 0 & 1 & 1 & 0 \\
+			1 & 1 & 0 & 1 & 0 \\
+			1 & 1 & 1 & 1 & 1
+		\end{tabular}
+		\egroup
+	\end{center}
+	To obtain the low bit, we use two \verb|half_adder| to add $A$ and $B$, and the first sum's low bit to $C$, respectively. Note that the three-bit sum outputs carry if either of the two aforementioned sums output carry. This is because internally the carry is the AND product of two input bits, and checking if any of the two sums output carry is synonymous with checking if two or more input bits are enabled. Using this, implementation of the full adder is simple.
+\end{subcircuit}
+
+We now implement the 4-bit ripple-carry adder (RCA). An RCA works similarly to the conventional digit-by-digit computation of the sum of two numbers. More specifically, the least significant bits of each operands are added using the \verb|full_adder|, and we repeat this process digit-by-digit moving to the most significant bit, and the carry from the previous digit is fed into the next adder. The initial carry bit can also be easily included and fed to the least significant adder. The output of each adder is the corresponding resultant bit of the final answer. An implementation is shown in \verb|24125102_01.circ|.
+
+\section{8-bit subtraction circuit implementation}
+We note that $A - B = A + \overline B + 1$. Thus we simply extend our RCA devised in exercise 1 to 8-bit, negate the $B$ input and feed a constant $1$ to the first adder's carry slot. An implementation is shown in \verb|24125102_02.circ|.
+
+\section{Partial 4-bit arithmetic unit implementation}
+The implementation consists of two main blocks: a 4-bit RCA dedicated to computing $A + B$ and another 4-bit RCA dedicated to computing $A + \overline{B} + 1$, whose implementations are outlined in exercise 1 and exercise 2. The selection of the result and carry output bit is implemented using two muxes selecting from the select bit. An implementation is shown in \verb|24125102_03.circ|.
+
+\section{4-bit carry look-ahead adder implementation}
+A ripple-carry adder is slow because the result of an adder is dependent on the high bit of the previous adder. A carry look-ahead adder solves this problem by calculating ahead of time whether an adder will generate a carry (both input bits are enabled) or propagate a carry (one or more input bits are enabled). This convenience thus calls for extra logic to calculate carry, as well as slight modifications to the individual adder unit to detect carry generation and propagation. An implementation follows.
+
+\begin{subcircuit}{partial\_adder}
+	This subcircuits works similarly to \verb|full_adder|, except the high bit output is replaced by two outputs: $P$ to represent if the adder will propagate a carry, and $G$ to represent if the adder will generate a carry. Observe the following truth table:
+	\begin{center}
+		\bgroup
+		\def\arraystretch{1.2}
+		\begin{tabular}{ccc|ccc}
+			$A$ & $B$ & $C$ & $l$ & $P$ & $G$ \\
+			\hline
+			0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 1 & 0 & 0 \\
+			0 & 1 & 0 & 1 & 1 & 0 \\
+			0 & 1 & 1 & 0 & 1 & 0 \\
+			1 & 0 & 0 & 1 & 1 & 0 \\
+			1 & 0 & 1 & 0 & 1 & 0 \\
+			1 & 1 & 0 & 0 & 1 & 1 \\
+			1 & 1 & 1 & 1 & 1 & 1
+		\end{tabular}
+		\egroup
+	\end{center}
+	By inspection, it is clear $l = A \lxor B \lxor C$, $P = A + B$, and $G = AB$. Assembling the circuit according to this logic, we obtain the partial adder.
+\end{subcircuit}
+
+Using this implementation, an adder's high bit will be enabled if the previous adder generates a carry, or the adder propagates a carry that was either generated or propagated from the adder before it. Thus, the carry bit for an adder $i$ is calculated using the formula $C_i = G_{i - 1} + P_{i - 1}C_{i - 1}$, which a PLA can be used to implement. Each digit can then be computed in a similar manner of exercise 1. An implementation is shown in \verb|24125102_04.circ|.
+
+\section{2-digit binary coded decimal adder implementation using basic logic gates}
+We begin by implementing a 4-bit full adder to perform nibble summation.
+\begin{subcircuit}{swag\_adder}
+	This subcircuit takes in two 4-bit data inputs and a 1-bit carry input. We simply repeat the same schematics delineated in exercise 1 to build a 4-bit adder.
+\end{subcircuit}
+
+We now wish to build a BCD half-adder. To this end, we first note that when we add two BCD digit, an overflow occurs when the sum exceeds $9$. To account for this overflow, the digit is then added by $6$ and the carry output bit is set. We thus need a subcircuit that checks if a nibble exceeds $9$. An implementation follows.
+\begin{subcircuit}{correctable}
+	This subcircuit takes in a 4-bit data input $D$ (comprising the most significant bit $w_3$ to the least significant bit $w_0$) and output a Boolean value $f$ whether the decimal representation of the input exceeds 9. Using truth table, we yield that $f = w_1w_3 + w_2w_3$, and we are done.
+\end{subcircuit}
+
+We are now ready to build our BCD half-adder.
+\begin{subcircuit}{BCD\_half\_adder}
+	This subcircuit takes in two 4-bit BCD input $A$ and $B$ and outputs $S$---the BCD sum---and $h$---the carry bit. As outlined above, we feed $A$ and $B$ to \verb|swag_adder|, check if the 4-bit adder generates carry or if the sum exceed 9, if it does then enable the carry output bit. The aforementioned sum is also fed into another \verb|swag_adder| where the second operand is either $0$ or $6$ depending whether the sum overflows. The output of the second \verb|swag_adder| is then our desired result.
+\end{subcircuit}
+
+Expansion into a BCD full-adder follows the same principle as expanding a 1-bit half-adder into a 1-bit full-adder.
+\begin{subcircuit}{BCD\_full\_adder}
+	This subcircuit takes in two 4-bit BCD input $A$ and $B$ representing the operands and one 1-bit input $C$ representing the carry. In the same principle as the assembly of \verb|full_adder|, the output $S$ is obtained by using two \verb|BCD_half_adder| to add every input, and the carry is obtained as the OR product of the high bits of each adder.
+\end{subcircuit}
+
+Having yielded the BCD full adder, we follow the same schematics in exercise 1 to obtain a 2-digit BCD adder. An implementation is shown in \verb|24125102_05.circ|.
+
+\section{8-bit carry look-ahead adder implementation using IC74181 and IC74182}
+The implementation works in a similar fashion as exercise 4, in that each IC74181 acts as a 4-bit carry look-ahead adder, and the generation and propagation bit is fed into the IC74182 to generate the appropriate carry inputs for each IC74181. An implementation is shown in \verb|24125102_06.circ|.
+\end{document}
