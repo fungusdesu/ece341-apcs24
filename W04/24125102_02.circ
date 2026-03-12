@@ -64,20 +64,24 @@
     <a name="simulationFrequency" val="4.0"/>
     <comp lib="0" loc="(110,170)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="B"/>
+      <a name="radix" val="10signed"/>
       <a name="width" val="8"/>
     </comp>
     <comp lib="0" loc="(110,320)" name="Pin">
       <a name="appearance" val="NewPins"/>
+      <a name="label" val="C"/>
     </comp>
     <comp lib="0" loc="(110,60)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="A"/>
+      <a name="radix" val="10signed"/>
       <a name="width" val="8"/>
     </comp>
     <comp lib="0" loc="(140,540)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="S"/>
+      <a name="radix" val="10signed"/>
       <a name="type" val="output"/>
       <a name="width" val="8"/>
     </comp>
@@ -88,6 +92,7 @@
     </comp>
     <comp lib="0" loc="(140,660)" name="Pin">
       <a name="appearance" val="NewPins"/>
+      <a name="label" val="hi"/>
       <a name="type" val="output"/>
     </comp>
     <comp lib="0" loc="(150,170)" name="Splitter">

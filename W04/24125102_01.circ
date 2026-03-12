@@ -5,8 +5,6 @@
   <lib desc="#Wiring" name="0">
     <tool name="Splitter">
       <a name="appear" val="right"/>
-      <a name="fanout" val="4"/>
-      <a name="incoming" val="4"/>
     </tool>
     <tool name="Pin">
       <a name="appearance" val="classic"/>
@@ -66,7 +64,8 @@
     <a name="simulationFrequency" val="4.0"/>
     <comp lib="0" loc="(150,110)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="B"/>
+      <a name="radix" val="10signed"/>
       <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(150,110)" name="Splitter">
@@ -76,10 +75,12 @@
     </comp>
     <comp lib="0" loc="(150,170)" name="Pin">
       <a name="appearance" val="NewPins"/>
+      <a name="label" val="C"/>
     </comp>
     <comp lib="0" loc="(150,280)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="S"/>
+      <a name="radix" val="10signed"/>
       <a name="type" val="output"/>
       <a name="width" val="4"/>
     </comp>
@@ -88,13 +89,15 @@
       <a name="fanout" val="4"/>
       <a name="incoming" val="4"/>
     </comp>
-    <comp lib="0" loc="(150,340)" name="Pin">
+    <comp lib="0" loc="(150,350)" name="Pin">
       <a name="appearance" val="NewPins"/>
+      <a name="label" val="hi"/>
       <a name="type" val="output"/>
     </comp>
     <comp lib="0" loc="(150,60)" name="Pin">
       <a name="appearance" val="NewPins"/>
-      <a name="radix" val="16"/>
+      <a name="label" val="A"/>
+      <a name="radix" val="10signed"/>
       <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(150,60)" name="Splitter">
@@ -107,7 +110,7 @@
     <comp loc="(570,200)" name="full_adder"/>
     <comp loc="(700,200)" name="full_adder"/>
     <wire from="(150,170)" to="(160,170)"/>
-    <wire from="(150,340)" to="(700,340)"/>
+    <wire from="(150,350)" to="(700,350)"/>
     <wire from="(160,170)" to="(160,240)"/>
     <wire from="(160,240)" to="(210,240)"/>
     <wire from="(170,100)" to="(600,100)"/>
@@ -144,7 +147,7 @@
     <wire from="(590,220)" to="(600,220)"/>
     <wire from="(600,100)" to="(600,200)"/>
     <wire from="(700,200)" to="(710,200)"/>
-    <wire from="(700,240)" to="(700,340)"/>
+    <wire from="(700,240)" to="(700,350)"/>
     <wire from="(710,200)" to="(710,320)"/>
   </circuit>
   <circuit name="full_adder">
