@@ -1,0 +1,116 @@
+\documentclass{exam}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[main=english,vietnamese]{babel}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{centernot}
+\usepackage{cases}
+\usepackage{physics}
+\usepackage[shortlabels]{enumitem}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage{sidecap}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{kvmap}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\definecolor{borderblue}{HTML}{33c2ff}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\curly}[1]{\left\{#1\right\}}
+
+\allowdisplaybreaks
+
+\makeatletter
+\long\def\paragraph{%
+  \@startsection{paragraph}{4}%
+  {\z@}{2ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\def\@xequals@fill{\arrowfill@\Relbar\Relbar\Relbar}
+\newcommand*\xequals[2][]{\DOTSB\ext@arrow0055\@xequals@fill{#1}{#2}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\NewTColorBox{subcircuit}{m}{
+  standard jigsaw,
+  sharp corners,
+  boxrule=0.4pt,
+  coltitle=black,
+  colframe=black,
+  opacityback=0,
+  opacitybacktitle=0,
+  fonttitle=\normalfont\bfseries\upshape,
+  fontupper=\normalfont,
+  title={Subcircuit \texttt{#1}},
+  after title={.},	
+  attach title to upper={\ },
+}
+
+\newcommand{\lnand}{\uparrow}
+\newcommand{\lnor}{\downarrow}
+\newcommand{\lxor}{\oplus}
+
+\title{ECE341 - Homework 7}
+\author{Ton-Minh-Ky Tran}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\section{Unconditional jump instruction}
+The \verb|J| instruction corresponds to an opcode of \verb|000010|. By inserting an instruction with the opcode and $2$ as the label corresponding to an absolute jump to \verb|0x8|, the yielded program jumps to . The program is found in the ROM image \verb|loop.txt|.
+
+\section{While-loop using branches and jumps}
+We simply look up the MIPS instruction encoding to encode each given instruction. The jump address is \verb|0x3|. The program is found in the ROM image \verb|whileloop.txt|.
+
+\section{Null-terminated string storage in RAM}
+The starting address is \verb|$r2 := 0x30| and we wish to move each byte of the string (two characters) to \verb|r2 + 2i|, where \verb|i| is the displacement of the starting address signifying number of bytes stored. Using \verb|r1| to store two characters at a time and then move it to the address stored in \verb|r2|, we yield what we desire---the string \verb|Hello: Ky\0| in the address \verb|0x30|. The program is found in the ROM image \verb|hello.txt|.
+
+\section{Load null-terminated string in RAM to TTY console}
+Using the same procedure outlined in \textbf{Exercise 3} to preload the string into RAM, we know that the string address \verb|S| is \verb|0x30|, the string length \verb|n| is \verb|0xa|, and the memory-mapped address of the console \verb|D| is \verb|0x80000008|. From this point, this is just a loop that reads the character in RAM using the \verb|lb| instruction to store in a register and then load the character to \verb|D|. The loop terminates if \verb|P| reaches \verb|S + n|, after which we load the line feed character to \verb|D|. The program is found in the ROM image \verb|println.txt|.
+
+\end{document}
