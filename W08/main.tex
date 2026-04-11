@@ -1,0 +1,136 @@
+\documentclass{exam}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[main=english,vietnamese]{babel}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{centernot}
+\usepackage{cases}
+\usepackage{physics}
+\usepackage[shortlabels]{enumitem}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage{sidecap}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{kvmap}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\definecolor{borderblue}{HTML}{33c2ff}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\curly}[1]{\left\{#1\right\}}
+
+\allowdisplaybreaks
+
+\makeatletter
+\long\def\paragraph{%
+  \@startsection{paragraph}{4}%
+  {\z@}{2ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\def\@xequals@fill{\arrowfill@\Relbar\Relbar\Relbar}
+\newcommand*\xequals[2][]{\DOTSB\ext@arrow0055\@xequals@fill{#1}{#2}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\NewTColorBox{subcircuit}{m}{
+  standard jigsaw,
+  sharp corners,
+  boxrule=0.4pt,
+  coltitle=black,
+  colframe=black,
+  opacityback=0,
+  opacitybacktitle=0,
+  fonttitle=\normalfont\bfseries\upshape,
+  fontupper=\normalfont,
+  title={Subcircuit \texttt{#1}},
+  after title={.},	
+  attach title to upper={\ },
+}
+
+\newcommand{\lnand}{\uparrow}
+\newcommand{\lnor}{\downarrow}
+\newcommand{\lxor}{\oplus}
+
+\title{ECE341 - Homework 8}
+\author{Ton-Minh-Ky Tran}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Print a string in RAM to TTY console}
+We assume big endianness for this exercise. After calling \verb|readWithoutEcho| to input a string to RAM at the address \verb|0x30|, we wish to now print the string starting with the character in \verb|0x30|. We allocate the following responsibilities for the registers in our arsenal:
+\begin{itemize}
+	\item \verb|r2|: return value (the number of characters printed excluding the null terminator)
+	\item \verb|r4|: first parameter (address of the string in RAM)
+	\item \verb|r5|: the current character being printed
+	\item \verb|r8|: peripheral base (\verb|0x80000000|)
+\end{itemize}
+Printing the string can then be easily achieved by continually loading \verb|r5|, outputting it to \verb|0x8(r8)|, increment the return value and moving to \verb|r4+0x4| until a null terminator is encountered. An implementation of the program is located in \verb|24125102_01/readwithoutecho.txt|.
+
+\section{Read a string with echo and put to RAM}
+We assume big endianness for this exercise. We wish to read the characters input from the keyboard, store it to RAM, and then echo it to the TTY console---essentially similar to Exercise 1 using the keyboard instead of pre-existing strings in RAM. As such, we can follow a similar procedure outlined in Exercise 1. We also remark that a modification of the functions implemented in the previous and this exercises will be frequently used in the next exercises due to their usefulness. An implementation of the program is located in \verb|24125102_02/readwithecho.txt|.
+
+\section{Number guessing game using ASCII-to-integer function}
+We assume little endianness for this exercise and those onwards. Because of the endianness change, we also modify the previous read/write functions to work little endianly---extracting words and read each byte by right shifting the word. The main premise of this exercise is the \verb|atoi(p)| function that converts a string to the integer. This function behaves similarly to the C implementation of \verb|atoi|---parse the string character by character leftwards until an unparsabale character is encountered (nonnumeric character aside from \verb|-|, nonleading \verb|-|).
+
+The function \verb|atoi(p)| takes \verb|p| as its argument---the address of the string in RAM. We divide the function into three subroutines:
+\begin{itemize}
+	\item Eliminate leading whitespace.
+	\item Once a non-whitespace character is encountered, determine the sign of the result. If the character is \verb|-|, set the sign to minus and move on to the next character. Otherwise, set the sign to positive and do not move to the next character.
+	\item Parse the rest of the string until a non-numeric character is encountered.
+\end{itemize}
+One can observe that if a numeric character is parsed, it is appended to the current result by multiplying it by $10$ and adding the product to the parsed number. An implementation of the program is located in \verb|24125102_03/atoi.txt|, and the preloaded RAM image is located in \verb|24125102_03/atoi_data.txt|.
+
+\section{LED toggling function}
+We use the implementations of the read/write functions, as well as \verb|atoi(p)|. Compared to the previous exercise, this one is relatively simple---given the first parameter \verb|n| denoting the LED to toggle, we simply set a register to \verb|1|, left shift it by \verb|n|, take the exclusive OR of the shift result and the current LED state, and store it back to the peripheral. An implementation of the program is located in \verb|24125102_04/led.txt|, and the preloaded RAM image is located in \verb|24125102_04/led_data.txt|.
+
+\section{Caesar cipher}
+We use the implementations of the read/write functions, as well as \verb|atoi(p)|. For ease of use, we implement the Caesar cipher as a standalone routine. Thus this function \verb|saladCipher(p, n)| takes in two arguments---the address to the string needed to be encoded \verb|p|, and the shift amount \verb|n|.
+
+The function iterates through each character of the string in RAM, encodes it, and stores the encoded character back. To encode the character, it first checks if the character is encodable (\verb|a-z| or \verb|A-Z|) and then shifts it rightwards by \verb|n|. Of course, if the shifted character exceeds the alphabet, it loops back to the start of the alphabet of the corresponding case. Mathematically, one can express the encoded character \verb|enc_char| encoded from the original character \verb|char| as \verb|enc_char = start + ((char - start + n) mod 0x1a)|, where \verb|start| denotes the first character of the corresponding case (\verb|0x41| if \verb|char| is uppercase, \verb|0x61| if otherwise) and \verb|0x1a| indicates the number of characters in the alphabet. An implementation of the program is located in \verb|24125102_05/caesar.txt|, and the preloaded RAM image is located in \verb|24125102_05/caesar_data.txt|.
+
+\end{document}
