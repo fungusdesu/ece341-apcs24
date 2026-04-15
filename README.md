@@ -1,4 +1,4 @@
-# APCS k24 ECE341 (Computer Hardware)
+# Computer Hardware
 ngl very enjoyable course
 
 ![alt](cutieichika.png)
