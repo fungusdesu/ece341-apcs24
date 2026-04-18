@@ -1,0 +1,123 @@
+\documentclass{exam}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[main=english,vietnamese]{babel}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{centernot}
+\usepackage{cases}
+\usepackage{physics}
+\usepackage[shortlabels]{enumitem}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage{sidecap}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{kvmap}
+\usepackage{stix2}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\definecolor{borderblue}{HTML}{33c2ff}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\curly}[1]{\left\{#1\right\}}
+
+\allowdisplaybreaks
+
+\makeatletter
+\long\def\paragraph{%
+  \@startsection{paragraph}{4}%
+  {\z@}{2ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\def\@xequals@fill{\arrowfill@\Relbar\Relbar\Relbar}
+\newcommand*\xequals[2][]{\DOTSB\ext@arrow0055\@xequals@fill{#1}{#2}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\NewTColorBox{subcircuit}{m}{
+  standard jigsaw,
+  sharp corners,
+  boxrule=0.4pt,
+  coltitle=black,
+  colframe=black,
+  opacityback=0,
+  opacitybacktitle=0,
+  fonttitle=\normalfont\bfseries\upshape,
+  fontupper=\normalfont,
+  title={Subcircuit \texttt{#1}},
+  after title={.},	
+  attach title to upper={\ },
+}
+
+\newcommand{\lnand}{\uparrow}
+\newcommand{\lnor}{\downarrow}
+\newcommand{\lxor}{\oplus}
+
+\title{ECE341 - Homework 9}
+\author{Ton-Minh-Ky Tran}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Display switches states to LED row}
+Trivial. Using the fact that the LED is memory-mapped to \verb|0x8000000c| and the switches are to \verb|0x80000010|, we load the half-word from the latter and store it back to the former. An implementation of the program is located in \verb|24125102_01/Prog1.txt|.
+
+\section{Toggle an LED with a button}
+Same premise as Exercise 1, with the buttons are memory-mapped to the bits 10-12 of the word stored in \verb|0x80000010|. The only tricky part is that we require the button \verb|B0| to toggle the LED per press instead of per clock cycle when it's enabled. In other words, we wish for the toggle to be edge-triggered instead of level-triggered, which can easily be dealt with by storing the previous buttons states. The toggle can be trivially implemented by taking the XOR of the current LED state and \verb|0x1|. An implementation of the program is located in \verb|24125102_02/Prog2.txt|.
+
+\section{LED command panel using buttons}
+Same premise as Exercise 2, with different operations---shifting left by one bit via \verb|sll| and inverting via \verb|nor|. An implementation of the program is located in \verb|24125102_03/Prog3.txt|.
+
+\section{Counter stored in RAM and displayed via LED}
+Simply set \verb|0x0| as the memory address of the current counter value, and with the same techniques as devised in Exercise 2 and 3, we simply pull the value, update it, and push the value to LED. An implementation of the program is located in \verb|24125102_04/Prog4.txt|.
+
+\section{Counter stored in RAM and displayed via 7-segment display}
+By modifying the southbridge to append a peripheral 7-segment display that utilizes 8 bits, we use the same solution to Exercise 4---with a notable difference that we need to wrap the value in case of over- or underflow. An implementation of the program is located in \verb|24125102_05/Prog5.txt|.
+
+\section{Display symbols on $8 \times 8$ display}
+We first modify the southbridge to append a peripheral $8 \times 8$ display. The display is split into two top and bottom halves---the former is memory-mapped to \verb|0x80000018| and the latter is to \verb|0x8000001c|. Preloading the RAM with the symbol data that determines which pixels to light up to draw the symbol, we simply load the required data to the display and change the data to be loaded whenever \verb|B1| is pressed. An implementation of the program is located in \verb|24125102_06/Prog6.txt|, and the RAM image is located in \verb|24125102_06/Prog6_data.txt|.
+
+\end{document}
